@@ -1,0 +1,14 @@
+
+Å°app
+WindowObjects
+
+Å°option
+opt_closeOrgWindow
+opt_hideScrollBar
+opt_addRightClickMenu
+
+opt_insertCSS
+
+opt_specifyWindowSize
+opt_popupWindowWidth
+opt_popupWindowHeight

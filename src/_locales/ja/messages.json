@@ -1,0 +1,8 @@
+{
+  "appName": {
+    "message": "TabToPopup"
+  },
+  "description": {
+  	"message": "現在表示しているページをポップアップウインドウ化します"
+  }
+}

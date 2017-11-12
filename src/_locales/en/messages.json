@@ -1,0 +1,8 @@
+{
+  "appName": {
+    "message": "TabToPopup"
+  },
+  "description": {
+  	"message": "this extention enable to export current tab page to new popup window."
+  }
+}

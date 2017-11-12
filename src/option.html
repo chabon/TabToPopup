@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>option</title>
+
+</head>
+
+<body>
+
+
+<h3>TabToPopup option</h3>
+
+
+<hr>
+<ul>
+    <input type="checkbox" id="closeOrgWindow" value="" checked>
+    when open a popup window, close the original window
+</ul>
+<ul>
+    <input type="checkbox" id="hideScrollBar" value="" checked>
+    hide the scroll bar
+</ul>
+<ul>
+    <input type="checkbox" id="addRightClickMenu" value="">
+    add 「open in popup window」to right-click menu on the link
+</ul>
+
+<hr>
+
+<ul>
+    <input type="checkbox" id="insertCSS" value="">
+    insert css in the popup window
+</ul>
+<ul>
+    <textarea id="cssCode" cols="60" rows="25" 
+    placeholder="/* example */
+    
+#siteHeader {
+    position: relative !important;
+}"></textarea>
+    
+</ul>
+
+<hr>
+
+<ul>
+    <input type="checkbox" id="specifyWindowSize" value="" unchecked>
+    specify popup window size
+</ul>
+<ul>
+    Width=
+    <input type="number" id="popupWindowWidth" size="10" min="10" max ="9999" value="600">
+    　
+    Height=
+    <input type="number" id="popupWindowHeight" size="10" min="10" max="9999" value="480">
+</ul>
+
+<hr>
+
+<p>Add the following sites to the right-click menu on the TabToPopup icon</p>
+
+<table border="0">
+    <tr>
+        <td>Name</td> 
+        <td>URL</td>
+    </tr>
+    <tr>
+        <td>
+            <input name="bookmark_name" type="text" value="">
+        </td> 
+        <td>
+            <input name="bookmark_url" size="40" type="text" value="">
+        </td> 
+    </tr>
+
+    <tr>
+        <td>
+            <input name="bookmark_name" type="text" value="">
+        </td> 
+        <td>
+            <input name="bookmark_url" size="40" type="text" value="">
+        </td> 
+    </tr>
+
+    <tr>
+        <td>
+            <input name="bookmark_name" type="text" value="">
+        </td> 
+        <td>
+            <input name="bookmark_url" size="40" type="text" value="">
+        </td> 
+    </tr>
+
+    <!-- <tr> -->
+        <!-- <td> -->
+            <!-- <input name="bookmark_name" type="text" value=""> -->
+        <!-- </td>  -->
+        <!-- <td> -->
+            <!-- <input name="bookmark_url" size="40" type="text" value=""> -->
+        <!-- </td>  -->
+    <!-- </tr> -->
+
+    <!-- <tr> -->
+        <!-- <td> -->
+            <!-- <input name="bookmark_name" type="text" value=""> -->
+        <!-- </td>  -->
+        <!-- <td> -->
+            <!-- <input name="bookmark_url" size="40" type="text" value=""> -->
+        <!-- </td>  -->
+    <!-- </tr> -->
+
+</table>
+
+
+
+<hr>
+<script type="text/javascript" src="option.js" charset="utf-8"></script>
+    
+</body>
+</html>
