@@ -46,8 +46,6 @@ document.getElementById("cssCode").addEventListener("keydown", function(e) {
 document.getElementById("specifyWindowSize").onclick = function(){
     var b = document.getElementById("specifyWindowSize").checked;
     localStorage.setItem("opt_specifyWindowSize", JSON.stringify(b));
-    document.getElementById("popupWindowWidth").disabled = !b;
-    document.getElementById("popupWindowHeight").disabled = !b;
 }
 document.getElementById("popupWindowWidth").onchange = function(){
     localStorage.setItem("opt_popupWindowWidth", document.getElementById("popupWindowWidth").value);
@@ -56,8 +54,21 @@ document.getElementById("popupWindowHeight").onchange = function(){
     localStorage.setItem("opt_popupWindowHeight", document.getElementById("popupWindowHeight").value);
 }
 
+// specify popup window position
+document.getElementById("specifyWindowPos").onclick = function(){
+    var b = document.getElementById("specifyWindowPos").checked;
+    localStorage.setItem("opt_specifyWindowPos", JSON.stringify(b));
+}
+document.getElementById("popupWindowPosX").onchange = function(){
+    localStorage.setItem("opt_popupWindowPosX", document.getElementById("popupWindowPosX").value);
+}
+document.getElementById("popupWindowPosY").onchange = function(){
+    localStorage.setItem("opt_popupWindowPosY", document.getElementById("popupWindowPosY").value);
+}
 
-// Add the following sites to the right-click menu on the icon
+// Bookmarks
+
+// Name
 var textBox_bookmark_name = document.getElementsByName("bookmark_name");
 var textBox_bookmark_name_onchange = function(i){
     return function(){
@@ -72,7 +83,7 @@ for (var i = 0; i < textBox_bookmark_name.length; ++i) {
     textBox_bookmark_name[i].onchange = textBox_bookmark_name_onchange(i);
 }
 
-
+// URL
 var textBox_bookmark_url = document.getElementsByName("bookmark_url");
 var textBox_bookmark_url_onchange = function(i){
     return function(){
@@ -85,6 +96,50 @@ var textBox_bookmark_url_onchange = function(i){
 }
 for (var i = 0; i < textBox_bookmark_url.length; ++i) {
     textBox_bookmark_url[i].onchange = textBox_bookmark_url_onchange(i);
+}
+
+// width
+var textBox_bookmark_width = document.getElementsByName("bookmark_width");
+var textBox_bookmark_width_onchange = function(i){
+    return function(){
+        localStorage.setItem("opt_bookmark_width_" + i.toString(), textBox_bookmark_width[i].value);
+    }
+}
+for (var i = 0; i < textBox_bookmark_width.length; ++i) {
+    textBox_bookmark_width[i].onchange = textBox_bookmark_width_onchange(i);
+}
+
+// height
+var textBox_bookmark_height = document.getElementsByName("bookmark_height");
+var textBox_bookmark_height_onchange = function(i){
+    return function(){
+        localStorage.setItem("opt_bookmark_height_" + i.toString(), textBox_bookmark_height[i].value);
+    }
+}
+for (var i = 0; i < textBox_bookmark_height.length; ++i) {
+    textBox_bookmark_height[i].onchange = textBox_bookmark_height_onchange(i);
+}
+
+// pos X
+var textBox_bookmark_posX = document.getElementsByName("bookmark_posX");
+var textBox_bookmark_posX_onchange = function(i){
+    return function(){
+        localStorage.setItem("opt_bookmark_posX_" + i.toString(), textBox_bookmark_posX[i].value);
+    }
+}
+for (var i = 0; i < textBox_bookmark_posX.length; ++i) {
+    textBox_bookmark_posX[i].onchange = textBox_bookmark_posX_onchange(i);
+}
+
+// pos Y
+var textBox_bookmark_posY = document.getElementsByName("bookmark_posY");
+var textBox_bookmark_posY_onchange = function(i){
+    return function(){
+        localStorage.setItem("opt_bookmark_posY_" + i.toString(), textBox_bookmark_posY[i].value);
+    }
+}
+for (var i = 0; i < textBox_bookmark_posY.length; ++i) {
+    textBox_bookmark_posY[i].onchange = textBox_bookmark_posY_onchange(i);
 }
 
 
@@ -116,18 +171,41 @@ document.body.onload = function(){
     if(localStorage.getItem("opt_popupWindowHeight")){
         document.getElementById("popupWindowHeight").value = localStorage.getItem("opt_popupWindowHeight");
     }
+    if(localStorage.getItem("opt_specifyWindowPos")){
+        document.getElementById("specifyWindowPos").checked = JSON.parse( localStorage.getItem("opt_specifyWindowPos") );
+    }
+    if(localStorage.getItem("opt_popupWindowPosX")){
+        document.getElementById("popupWindowPosX").value = localStorage.getItem("opt_popupWindowPosX");
+    }
+    if(localStorage.getItem("opt_popupWindowPosY")){
+        document.getElementById("popupWindowPosY").value = localStorage.getItem("opt_popupWindowPosY");
+    }
 
     // bookmarks
     for (var i = 0; i < textBox_bookmark_name.length; ++i) {
         if(localStorage.getItem("opt_bookmark_name_" + i.toString() )){
             textBox_bookmark_name[i].value = localStorage.getItem("opt_bookmark_name_" + i.toString() );
         }
-        
-    }
-    for (var i = 0; i < textBox_bookmark_url.length; ++i) {
         if(localStorage.getItem("opt_bookmark_url_" + i.toString() )){
             textBox_bookmark_url[i].value = localStorage.getItem("opt_bookmark_url_" + i.toString() );
         }
-        
+
+        if(localStorage.getItem("opt_bookmark_width_" + i.toString() )){
+            textBox_bookmark_width[i].value = localStorage.getItem("opt_bookmark_width_" + i.toString() );
+        }
+        if(localStorage.getItem("opt_bookmark_height_" + i.toString() )){
+            textBox_bookmark_height[i].value = localStorage.getItem("opt_bookmark_height_" + i.toString() );
+        }
+        if(localStorage.getItem("opt_bookmark_posX_" + i.toString() )){
+            textBox_bookmark_posX[i].value = localStorage.getItem("opt_bookmark_posX_" + i.toString() );
+        }
+        if(localStorage.getItem("opt_bookmark_posY_" + i.toString() )){
+            textBox_bookmark_posY[i].value = localStorage.getItem("opt_bookmark_posY_" + i.toString() );
+        }
+
     }
+
+    // version info
+    var versionInfo = document.getElementsByName("verInfo");
+    versionInfo[0].innerText = "ver " + chrome.runtime.getManifest().version;
 }

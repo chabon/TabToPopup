@@ -13,6 +13,8 @@
 
 
 <hr>
+
+<!-- basic settings -->
 <ul>
     <input type="checkbox" id="closeOrgWindow" value="" checked>
     when open a popup window, close the original window
@@ -28,6 +30,8 @@
 
 <hr>
 
+
+<!-- insert css -->
 <ul>
     <input type="checkbox" id="insertCSS" value="">
     insert css in the popup window
@@ -44,75 +48,87 @@
 
 <hr>
 
+
+<!-- specify window size -->
 <ul>
     <input type="checkbox" id="specifyWindowSize" value="" unchecked>
     specify popup window size
 </ul>
 <ul>
     Width=
-    <input type="number" id="popupWindowWidth" size="10" min="10" max ="9999" value="600">
+    <input type="number" id="popupWindowWidth" size="10" min="0" max ="9999" placeholder="640">
     　
     Height=
-    <input type="number" id="popupWindowHeight" size="10" min="10" max="9999" value="480">
+    <input type="number" id="popupWindowHeight" size="10" min="0" max="9999" placeholder="480">
 </ul>
 
 <hr>
 
-<p>Add the following sites to the right-click menu on the TabToPopup icon</p>
+
+<!-- specify window pos -->
+<ul>
+    <input type="checkbox" id="specifyWindowPos" value="" unchecked>
+    specify popup window position
+</ul>
+<ul>
+    Pos X=
+    <input type="number" id="popupWindowPosX" size="10" min="-100000" max ="100000" placeholder="0">
+    　
+    Pos Y=
+    <input type="number" id="popupWindowPosY" size="10" min="-100000" max="100000" placeholder="0">
+</ul>
+
+<hr>
+
+
+<!-- bookmarks -->
+<h4>Bookmarks</h4>
+<p>The following sites will be added to right-click menu on the TabToPopup icon</p>
+<p>"Width", "Height", "Pos X" and "Pos Y" are optional and override above options</p>
 
 <table border="0">
     <tr>
         <td>Name</td> 
         <td>URL</td>
+        <td>Width</td>
+        <td>Height</td>
+        <td>Pos X</td>
+        <td>Pos Y</td>
     </tr>
     <tr>
-        <td>
-            <input name="bookmark_name" type="text" value="">
-        </td> 
-        <td>
-            <input name="bookmark_url" size="40" type="text" value="">
-        </td> 
+      <td> <input name="bookmark_name" type="text" value="" placeholder="Google"> </td>
+      <td> <input name="bookmark_url" size="40" type="text" value="" placeholder="https://www.google.com/"> </td>
+      <td> <input name="bookmark_width" size="5" type="text" value="" placeholder="640"> </td>
+      <td> <input name="bookmark_height" size="5" type="text" value="" placeholder="480"> </td>
+      <td> <input name="bookmark_posX" size="5" type="text" value="" placeholder="0"> </td>
+      <td> <input name="bookmark_posY" size="5" type="text" value="" placeholder="0"> </td>
     </tr>
-
-    <tr>
-        <td>
-            <input name="bookmark_name" type="text" value="">
-        </td> 
-        <td>
-            <input name="bookmark_url" size="40" type="text" value="">
-        </td> 
-    </tr>
-
-    <tr>
-        <td>
-            <input name="bookmark_name" type="text" value="">
-        </td> 
-        <td>
-            <input name="bookmark_url" size="40" type="text" value="">
-        </td> 
-    </tr>
-
-    <!-- <tr> -->
-        <!-- <td> -->
-            <!-- <input name="bookmark_name" type="text" value=""> -->
-        <!-- </td>  -->
-        <!-- <td> -->
-            <!-- <input name="bookmark_url" size="40" type="text" value=""> -->
-        <!-- </td>  -->
-    <!-- </tr> -->
-
-    <!-- <tr> -->
-        <!-- <td> -->
-            <!-- <input name="bookmark_name" type="text" value=""> -->
-        <!-- </td>  -->
-        <!-- <td> -->
-            <!-- <input name="bookmark_url" size="40" type="text" value=""> -->
-        <!-- </td>  -->
-    <!-- </tr> -->
-
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input name="bookmark_name" type="text" value=""> </td> <td> <input name="bookmark_url" size="40" type="text" value=""> </td> <td> <input name="bookmark_width" size="5" type="text" value=""> </td> <td> <input name="bookmark_height" size="5" type="text" value=""> </td> <td> <input name="bookmark_posX" size="5" type="text" value=""> </td> <td> <input name="bookmark_posY" size="5" type="text" value=""> </td> </tr>
 </table>
 
 
+<hr>
+
+<!-- version info -->
+<div name = "verInfo">ver  . . </div>
 
 <hr>
 <script type="text/javascript" src="option.js" charset="utf-8"></script>

@@ -3,7 +3,7 @@ var TabToPopup = {
     currentTab : null,
     popupWindows : new Array(),
     timerID : 0,
-    bookmarkNum : 5
+    bookmarkNum : 20
 };
 
 
@@ -80,7 +80,18 @@ TabToPopup.initEvents = function(){
             for (var i = 0; i < TabToPopup.bookmarkNum; ++i) {
                 if(info.menuItemId == "openBookmark_" + i.toString() ){
                     if(localStorage.getItem("opt_bookmark_url_" + i.toString() )){
-                        TabToPopup.createPopupWindow(localStorage.getItem("opt_bookmark_url_" + i.toString() ));   
+                        // console.log('opt_bookmark_url_'    + i.toString() + ' : ' + localStorage.getItem("opt_bookmark_url_" + i.toString()) );
+                        // console.log('opt_bookmark_width_'  + i.toString() + ' : ' + localStorage.getItem("opt_bookmark_width_" + i.toString()) );
+                        // console.log('opt_bookmark_height_' + i.toString() + ' : ' + localStorage.getItem("opt_bookmark_height_" + i.toString()) );
+                        // console.log('opt_bookmark_posX_'   + i.toString() + ' : ' + localStorage.getItem("opt_bookmark_posX_" + i.toString()) );
+                        // console.log('opt_bookmark_posY_'   + i.toString() + ' : ' + localStorage.getItem("opt_bookmark_posY_" + i.toString()) );
+                        TabToPopup.createPopupWindow(
+                            localStorage.getItem("opt_bookmark_url_" + i.toString() ),
+                            Number.parseInt( localStorage.getItem("opt_bookmark_width_"  + i.toString()) ),
+                            Number.parseInt( localStorage.getItem("opt_bookmark_height_" + i.toString()) ),
+                            Number.parseInt( localStorage.getItem("opt_bookmark_posX_"   + i.toString()) ),
+                            Number.parseInt( localStorage.getItem("opt_bookmark_posY_"   + i.toString()) ),
+                            );   
                     }
                 }
             }  
@@ -92,9 +103,14 @@ TabToPopup.initEvents = function(){
 
 
 
-TabToPopup.createPopupWindow = function(linkUrl){
+TabToPopup.createPopupWindow = function(linkUrl, width, height, posX, posY){
     chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-        // console.log(linkUrl);
+        // console.log('url :' + linkUrl);
+        // console.log('width :' + width);
+        // console.log('height :' + height);
+        // console.log('pos x :' + posX);
+        // console.log('pos y :' + posY);
+
         TabToPopup.currentTab = tabs[0];
         var _url;
         if(linkUrl){
@@ -102,20 +118,46 @@ TabToPopup.createPopupWindow = function(linkUrl){
         }else{
             _url = tabs[0].url;
         }
-        // first window size
-        var popupWndWidth = Math.floor( tabs[0].width * 2 / 3 );
+
+        // default window size
+        var popupWndWidth =  Math.floor( tabs[0].width  * 2 / 3 );
         var popupWndHeight = Math.floor( tabs[0].height * 2 / 3 );
-        if(localStorage.getItem("opt_specifyWindowSize")?JSON.parse(localStorage.getItem("opt_specifyWindowSize")):false){
-            popupWndWidth  = Number(localStorage.getItem("opt_popupWindowWidth") );
-            popupWndHeight = Number(localStorage.getItem("opt_popupWindowHeight") );
+        
+        // specified window size
+        if (Number.isInteger(width) || Number.isInteger(height)){
+            if(Number.isInteger(width)  && width  >= 0) popupWndWidth  = width;
+            if(Number.isInteger(height) && height >= 0) popupWndHeight = height;
         }
+        else if(localStorage.getItem("opt_specifyWindowSize")?JSON.parse(localStorage.getItem("opt_specifyWindowSize")):false){
+            width  = Number.parseInt( localStorage.getItem("opt_popupWindowWidth") );
+            height = Number.parseInt( localStorage.getItem("opt_popupWindowHeight") );
+            popupWndWidth  = Number.isInteger(width)  && width  >= 0 ? width  : 640;
+            popupWndHeight = Number.isInteger(height) && height >= 0 ? height : 480;
+        }
+        
+        // default window pos
+        var popupWndPosX = null;
+        var popupWndPosY = null;
+
+        // specified window pos
+        if (Number.isInteger(posX) || Number.isInteger(posY)){
+            popupWndPosX = Number.isInteger(posX) ? posX : null;
+            popupWndPosY = Number.isInteger(posY) ? posY : null;
+        }
+        else if(localStorage.getItem("opt_specifyWindowPos")?JSON.parse(localStorage.getItem("opt_specifyWindowPos")):false){
+            popupWndPosX = Number(localStorage.getItem("opt_popupWindowPosX") );
+            popupWndPosY = Number(localStorage.getItem("opt_popupWindowPosY") );
+        }
+        
         // create
         chrome.windows.create({
-            url : _url,
+            url     : _url,
             focused : true,
-            type : 'popup',
-            width : popupWndWidth,
-            height : popupWndHeight
+            type    : 'popup',
+            width   : popupWndWidth,
+            height  : popupWndHeight,
+            left    : popupWndPosX,
+            top     : popupWndPosY,
         },function(newWindow){
             // keep newWindow obj
             TabToPopup.popupWindows.push(newWindow);
