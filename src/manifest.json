@@ -1,13 +1,11 @@
 {
   "name": "__MSG_appName__",
-  "version": "1.0.6",
-  "manifest_version": 2,
+  "version": "1.1.0",
+  "manifest_version": 3,
   "description": "__MSG_description__",
   "background":{
-  	"scripts": [ 
-  	"background.js"
-  	],
-  	"persistent": true
+    "service_worker": "background.js",
+    "type": "module"
   },
   "icons": {
     "16" : "images/TabToPopup_16.png",
@@ -16,15 +14,21 @@
     "48" : "images/TabToPopup_48.png",
     "128": "images/TabToPopup_128.png"
   },
-  "browser_action": {
+  "action": {
         "default_icon": "images/TabToPopup_19.png"
-   },
+  },
    "permissions": [
     "tabs",
-    "webNavigation",
     "contextMenus",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
      "<all_urls>"
   ],
   "default_locale": "ja",
-  "options_page": "option.html"
+  "options_page": "option.html",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
 }
