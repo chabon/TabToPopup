@@ -3,13 +3,15 @@ import { getSetting, setSetting } from './settings.js';
 
 
 const TabToPopup = {
-    popupWindows: [], // settings.popupWindows のストレージと同値
-    prevBoundsList : [], // settings.prevBoundsList のストレージと同値
     isInitialized: false,
     timerID: 0,
     bookmarkNum: 20,
 };
 
+const Cache = {
+    popupWindows: [],    // ストレージに保存された値(key:popupWindows)のキャッシュ
+    prevBoundsList : [], // ストレージに保存された値(key:prevBoundsList)のキャッシュ
+}
 
 const Listeners = {};
 
@@ -17,9 +19,9 @@ Listeners.popupWindowUpdated = async function (updatedTabId, changeInfo, tab) {
     console.log("[★event fired] chrome.tabs.onUpdated");
     await TabToPopup.init();
 
-    if (TabToPopup.popupWindows.length === 0) return;
-    for (let i = 0; i < TabToPopup.popupWindows.length; i++) {
-        if (tab.windowId === TabToPopup.popupWindows[i].windowId) {
+    if (Cache.popupWindows.length === 0) return;
+    for (let i = 0; i < Cache.popupWindows.length; i++) {
+        if (tab.windowId === Cache.popupWindows[i].windowId) {
             console.log(`tab [${updatedTabId}] updated. try execute script`);
             TabToPopup.executeScript(updatedTabId);
         }
@@ -31,12 +33,12 @@ Listeners.popupWindowBoundsChanged = async function (win) {
     console.log("[★event fired] chrome.windows.onBoundsChanged");
     await TabToPopup.init();
     
-    for(const popupWindow of TabToPopup.popupWindows){
+    for(const popupWindow of Cache.popupWindows){
         if(win.id === popupWindow.windowId){
             const tab = ( await chrome.windows.get(win.id, {populate:true}) ).tabs[0];
             const bounds = { left:win.left, top:win.top, width:win.width, height:win.height };
             popupWindow.bounds = bounds;
-            await setSetting("popupWindows", TabToPopup.popupWindows);
+            await setSetting("popupWindows", Cache.popupWindows);
         }
     }
 };
@@ -46,14 +48,14 @@ TabToPopup.init = async function () {
     if(!TabToPopup.isInitialized){
         console.log("TabToPopup Initialize start");
         TabToPopup.isInitialized = true;
-        TabToPopup.popupWindows.length = 0;
-        TabToPopup.prevBoundsList.length = 0;
+        Cache.popupWindows.length = 0;
+        Cache.prevBoundsList.length = 0;
         await TabToPopup.loadPopupWindowList();
-        this.prevBoundsList = await getSetting("prevBoundsList");
+        Cache.prevBoundsList = await getSetting("prevBoundsList");
         await this.initContextMenu();
         // 一覧にポップアップウィンドウが無い場合
         // onUpdated, onBoundsChanged イベントリスナーを削除(不要なServiceWorkerの起動を抑えるため)
-        if(TabToPopup.popupWindows.length === 0){
+        if(Cache.popupWindows.length === 0){
             chrome.tabs.onUpdated.removeListener(Listeners.popupWindowUpdated);
             console.log("[(-)remove listener] chrome.tabs.onUpdated")
             chrome.windows.onBoundsChanged.removeListener(Listeners.popupWindowBoundsChanged);
@@ -111,26 +113,26 @@ TabToPopup.initEvents = function () {
     chrome.windows.onRemoved.addListener(async function(windowId){
         console.log("[★event fired] chrome.windows.onRemoved");
         // このイベント時だけは、初期化関数を呼ぶ前に、位置サイズの保存処理を行う(先に初期化処理を行うと、閉じたウインドウがリストから消えてしまう)
-        TabToPopup.popupWindows   = await getSetting("popupWindows");   // SW終了していた場合に必要
-        TabToPopup.prevBoundsList = await getSetting("prevBoundsList"); // "
-        for(const popupWindow of TabToPopup.popupWindows){
+        Cache.popupWindows   = await getSetting("popupWindows");   // SW終了していた場合に必要
+        Cache.prevBoundsList = await getSetting("prevBoundsList"); // "
+        for(const popupWindow of Cache.popupWindows){
             if(popupWindow.windowId === windowId){
                 // 閉じたウインドウの矩形情報をリストとストレージに保存
                 if(popupWindow.bounds){
-                    const existing = TabToPopup.prevBoundsList
+                    const existing = Cache.prevBoundsList
                                       .find( b => b.bookmarkIndex === popupWindow.bookmarkIndex);
                     if(existing) existing.bounds = popupWindow.bounds;
-                    else TabToPopup.prevBoundsList
+                    else Cache.prevBoundsList
                                    .push({ bookmarkIndex: popupWindow.bookmarkIndex, bounds : popupWindow.bounds });
                     console.log(`window bounds saved. bookmarkIndex:${popupWindow.bookmarkIndex}, bounds:`, popupWindow.bounds);
-                    await setSetting("prevBoundsList", TabToPopup.prevBoundsList);
+                    await setSetting("prevBoundsList", Cache.prevBoundsList);
                 }
 
-                // 閉じたウインドウをポップアップウインドウリストから削除。ストレージも更新
-                const index = TabToPopup.popupWindows.indexOf(popupWindow);
-                TabToPopup.popupWindows.splice(index, 1);
-                await setSetting("popupWindows", TabToPopup.popupWindows);
-                console.log(`window(id:${windowId}) removed. remaining windows:`, TabToPopup.popupWindows);
+                // 閉じたウインドウをキャッシュのリストから削除。ストレージも更新
+                const index = Cache.popupWindows.indexOf(popupWindow);
+                Cache.popupWindows.splice(index, 1);
+                await setSetting("popupWindows", Cache.popupWindows);
+                console.log(`window(id:${windowId}) removed. remaining windows:`, Cache.popupWindows);
                 break;
             }
         }
@@ -194,20 +196,20 @@ TabToPopup.loadPopupWindowList = async function () {
     const loadedPopupWindowList = await getSetting("popupWindows");
     console.log("loaded popup window list : ", loadedPopupWindowList);
 
-    // ストレージから読み込んだウインドウが、実際に今存在しているのかチェックし、存在しているものだけをリストに追加
+    // ストレージから読み込んだウインドウが、実際に今存在しているのかチェックし、存在しているものだけをキャッシュに追加
     const windowList = await chrome.windows.getAll({ populate: true });
     for (const loadedPopupWindow of loadedPopupWindowList) {
         for (const window of windowList) {
             if (loadedPopupWindow.windowId === window.id) {
-                TabToPopup.popupWindows.push(loadedPopupWindow);
+                Cache.popupWindows.push(loadedPopupWindow);
                 break;
             }
         }
     }
-    console.log("existing popup window list : " ,TabToPopup.popupWindows);
+    console.log("existing popup window list : " ,Cache.popupWindows);
 
     // ストレージ更新
-    await setSetting("popupWindows", TabToPopup.popupWindows);
+    await setSetting("popupWindows", Cache.popupWindows);
 };
 
 
@@ -233,7 +235,7 @@ TabToPopup.createPopupWindow = async function (linkUrl, bookmarkIndex) {
         ? (await getSetting(`bookmark_saveBounds_${bookmarkIndex}`)) ? bookmarkIndex : null  // ブックマークからのウインドウ
         : (await getSetting('saveWindowBounds')) ? -1 : null; // 通常のウインドウ
     if (useSavedBounds !== null) {
-        const prev = this.prevBoundsList.find(b => b.bookmarkIndex === useSavedBounds);
+        const prev = Cache.prevBoundsList.find(b => b.bookmarkIndex === useSavedBounds);
         if (prev?.bounds) newWndBounds = prev.bounds;
     }
 
@@ -262,15 +264,13 @@ TabToPopup.createPopupWindow = async function (linkUrl, bookmarkIndex) {
         newWindow = await chrome.windows.create({ url: _url, focused: true, type: 'popup', ...newWndBounds });
     }
 
-    // 作成したポップアップウィンドウの情報を一覧に追加
+    // 作成したポップアップウィンドウの情報をキャッシュに追加。ServiceWorker終了に備えてストレージも更新
     const popupWindowInfo = {
         windowId : newWindow.id,
         bookmarkIndex : bookmarkIndex ?? -1
     }
-    TabToPopup.popupWindows.push(popupWindowInfo);
-
-    // Service Worker が終了すると popupWindows の内容が失われるため、ストレージに保存
-    await setSetting("popupWindows", TabToPopup.popupWindows );
+    Cache.popupWindows.push(popupWindowInfo);
+    await setSetting("popupWindows", Cache.popupWindows );
 
     // 設定により、現在表示中のページを閉じる
     if (!linkUrl) {
