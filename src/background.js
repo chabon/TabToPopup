@@ -3,8 +3,8 @@ import { getSetting, setSetting } from './settings.js';
 
 
 const TabToPopup = {
-    currentTab: null,
-    popupWindows: [],
+    popupWindows: [], // settings.popupWindows のストレージと同値
+    prevBoundsList : [], // settings.prevBoundsList のストレージと同値
     isInitialized: false,
     timerID: 0,
     bookmarkNum: 20,
@@ -19,29 +19,48 @@ Listeners.popupWindowUpdated = async function (updatedTabId, changeInfo, tab) {
 
     if (TabToPopup.popupWindows.length === 0) return;
     for (let i = 0; i < TabToPopup.popupWindows.length; i++) {
-        if (updatedTabId === TabToPopup.popupWindows[i].tabs[0].id) {
+        if (tab.windowId === TabToPopup.popupWindows[i].windowId) {
             console.log(`tab [${updatedTabId}] updated. try execute script`);
-            TabToPopup.executeScript(TabToPopup.popupWindows[i].tabs[0].id);
+            TabToPopup.executeScript(updatedTabId);
+        }
+    }
+};
+
+
+Listeners.popupWindowBoundsChanged = async function (win) {
+    console.log("[★event fired] chrome.windows.onBoundsChanged");
+    await TabToPopup.init();
+    
+    for(const popupWindow of TabToPopup.popupWindows){
+        if(win.id === popupWindow.windowId){
+            const tab = ( await chrome.windows.get(win.id, {populate:true}) ).tabs[0];
+            const bounds = { left:win.left, top:win.top, width:win.width, height:win.height };
+            popupWindow.bounds = bounds;
+            await setSetting("popupWindows", TabToPopup.popupWindows);
         }
     }
 };
 
 
 TabToPopup.init = async function () {
-    console.log("[function start] TabToPopup.init()");
-    console.log("TabToPopup.isInitialized = " + TabToPopup.isInitialized);
     if(!TabToPopup.isInitialized){
+        console.log("TabToPopup Initialize start");
         TabToPopup.isInitialized = true;
+        TabToPopup.popupWindows.length = 0;
+        TabToPopup.prevBoundsList.length = 0;
         await TabToPopup.loadPopupWindowList();
+        this.prevBoundsList = await getSetting("prevBoundsList");
         await this.initContextMenu();
-        // 一覧にポップアップウィンドウが無い場合は、onUpdatedイベントリスナーを削除(不要なServiceWorkerの起動を抑えるため)
+        // 一覧にポップアップウィンドウが無い場合
+        // onUpdated, onBoundsChanged イベントリスナーを削除(不要なServiceWorkerの起動を抑えるため)
         if(TabToPopup.popupWindows.length === 0){
             chrome.tabs.onUpdated.removeListener(Listeners.popupWindowUpdated);
             console.log("[(-)remove listener] chrome.tabs.onUpdated")
+            chrome.windows.onBoundsChanged.removeListener(Listeners.popupWindowBoundsChanged);
+            console.log("[(-)remove listener] chrome.windows.onBoundsChanged")
         }
+        console.log("TabToPopup.isInitialized = " + TabToPopup.isInitialized);
     }
-
-    console.log("[function end] TabToPopup.init()");
 };
 
 
@@ -52,9 +71,8 @@ TabToPopup.initEvents = function () {
     chrome.action.onClicked.addListener(async () => {
         console.log("[★event fired] chrome.action.onClicked (extension icon clicked)");
         await TabToPopup.init();
-        TabToPopup.createPopupWindow();
+        TabToPopup.createPopupWindow(null, -1);
     });
-    console.log("[(+)add listener] chrome.action.onClicked (extension icon clicked)")
 
     // コンテキストメニュークリック時
     chrome.contextMenus.onClicked.addListener( async (info, tab) => {
@@ -62,7 +80,7 @@ TabToPopup.initEvents = function () {
         await TabToPopup.init();
 
         if (info.menuItemId === "openFromLinks") {
-            TabToPopup.createPopupWindow(info.linkUrl);
+            TabToPopup.createPopupWindow(info.linkUrl, -1);
             return;
         }
         for (let i = 0; i < TabToPopup.bookmarkNum; i++) {
@@ -72,11 +90,10 @@ TabToPopup.initEvents = function () {
             }
         }
     });
-    console.log("[(+)add listener] chrome.contextMenus.onClicked")
 
     // メッセージ受信時
     chrome.runtime.onMessage.addListener( (request, sender, sendResponse) => { // chrome.runtime.onMessage.addListenerにasync関数は仕様上避けるべき。then構文はok
-        console.log("[★event fired] chrome.runtime.onMessage");
+        console.log("[★event fired] chrome.runtime.onMessage. request:", request);
         if (request.name === "TabToPopup_Command") {
             switch (request.command) {
                 case "initContextMenu":
@@ -88,14 +105,38 @@ TabToPopup.initEvents = function () {
                     return false;
             }
         }
-        // TabToPopup.init().then( () => {
-        // });
     });
-    console.log("[(+)add listener] chrome.runtime.onMessage")
 
-    // ページ更新時(ポップアップウィンドウ以外も対象)
-    chrome.tabs.onUpdated.addListener(Listeners.popupWindowUpdated);
-    console.log("[(+)add listener] chrome.tabs.onUpdated")
+    // ウインドウクローズ時
+    chrome.windows.onRemoved.addListener(async function(windowId){
+        console.log("[★event fired] chrome.windows.onRemoved");
+        // このイベント時だけは、初期化関数を呼ぶ前に、位置サイズの保存処理を行う(先に初期化処理を行うと、閉じたウインドウがリストから消えてしまう)
+        TabToPopup.popupWindows   = await getSetting("popupWindows");   // SW終了していた場合に必要
+        TabToPopup.prevBoundsList = await getSetting("prevBoundsList"); // "
+        for(const popupWindow of TabToPopup.popupWindows){
+            if(popupWindow.windowId === windowId){
+                // 閉じたウインドウの矩形情報をリストとストレージに保存
+                if(popupWindow.bounds){
+                    const existing = TabToPopup.prevBoundsList
+                                      .find( b => b.bookmarkIndex === popupWindow.bookmarkIndex);
+                    if(existing) existing.bounds = popupWindow.bounds;
+                    else TabToPopup.prevBoundsList
+                                   .push({ bookmarkIndex: popupWindow.bookmarkIndex, bounds : popupWindow.bounds });
+                    console.log(`window bounds saved. bookmarkIndex:${popupWindow.bookmarkIndex}, bounds:`, popupWindow.bounds);
+                    await setSetting("prevBoundsList", TabToPopup.prevBoundsList);
+                }
+
+                // 閉じたウインドウをポップアップウインドウリストから削除。ストレージも更新
+                const index = TabToPopup.popupWindows.indexOf(popupWindow);
+                TabToPopup.popupWindows.splice(index, 1);
+                await setSetting("popupWindows", TabToPopup.popupWindows);
+                console.log(`window(id:${windowId}) removed. remaining windows:`, TabToPopup.popupWindows);
+                break;
+            }
+        }
+
+        await TabToPopup.init();
+    });
 
     // インストール時(拡張機能の更新時、再読み込み時にも呼ばれる)
     chrome.runtime.onInstalled.addListener(async(details) => {
@@ -103,7 +144,18 @@ TabToPopup.initEvents = function () {
         console.log(details);
         await TabToPopup.init();
     });
-    console.log("[(+)add listener] chrome.runtime.onInstalled")
+
+    // -------------------------------------------
+    // 以下、動的なイベントリスナー(ここ以外でも追加、不要になれば削除する)
+
+    // ページ更新時(ポップアップウィンドウ以外も対象)
+    chrome.tabs.onUpdated.addListener(Listeners.popupWindowUpdated);
+    console.log("[(+)add listener] chrome.tabs.onUpdated")
+
+    // ウインドウ位置とサイズ変更時、その値を保存する
+    chrome.windows.onBoundsChanged.addListener(Listeners.popupWindowBoundsChanged);
+    console.log("[(+)add listener] chrome.windows.onBoundsChanged")
+
 };
 
 
@@ -134,118 +186,105 @@ TabToPopup.initContextMenu = async function () {
             });
         }
     }
-
-    console.log("[function end] TabToPopup.initContextMenu");
 };
 
 
 TabToPopup.loadPopupWindowList = async function () {
     console.log("[function start] TabToPopup.loadPopupWindowList");
-    const result = await getSetting("WindowObjects");
-    const tempArray = result ? JSON.parse(result) : [];
+    const loadedPopupWindowList = await getSetting("popupWindows");
+    console.log("loaded popup window list : ", loadedPopupWindowList);
 
-    // ストレージから読み込んだウインドウが、実際に今存在しているのかチェック
+    // ストレージから読み込んだウインドウが、実際に今存在しているのかチェックし、存在しているものだけをリストに追加
     const windowList = await chrome.windows.getAll({ populate: true });
-    for (const temp of tempArray) {
-        for (const wnd of windowList) {
-            if (temp.id === wnd.id) {
-                TabToPopup.popupWindows.push(wnd);
+    for (const loadedPopupWindow of loadedPopupWindowList) {
+        for (const window of windowList) {
+            if (loadedPopupWindow.windowId === window.id) {
+                TabToPopup.popupWindows.push(loadedPopupWindow);
                 break;
             }
         }
     }
-    console.log("loaded popup window count : " + TabToPopup.popupWindows.length);
-    console.log(TabToPopup.popupWindows);
+    console.log("existing popup window list : " ,TabToPopup.popupWindows);
 
-    // 実際に存在するウインドウが無いなら、ストレージを空にする
-    if(TabToPopup.popupWindows.length === 0){
-        await setSetting("WindowObjects", null);
-    }
-
-    console.log("[function end] TabToPopup.loadPopupWindowList");
+    // ストレージ更新
+    await setSetting("popupWindows", TabToPopup.popupWindows);
 };
 
 
 TabToPopup.createPopupWindow = async function (linkUrl, bookmarkIndex) {
     console.log("[function start] TabToPopup.createPopupWindow");
     const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
-    TabToPopup.currentTab = tabs[0];
     const _url = linkUrl || tabs[0].url;
 
-    // ウインドウサイズ
-    let popupWndWidth, popupWndHeight;
-
-    // 明示的にウインドウサイズを指定
-    if (Number.isInteger(bookmarkIndex)) {
-        // ブックマーク設定による指定
-        popupWndWidth  = Number.parseInt( await getSetting(`bookmark_width_${bookmarkIndex}`) );
-        popupWndHeight = Number.parseInt( await getSetting(`bookmark_height_${bookmarkIndex}`) );
-    } else {
-        // アプリ設定による指定
-        const specifyWindowSize = await getSetting('specifyWindowSize');
-        if (specifyWindowSize) {
-            popupWndWidth   = Number.parseInt( await getSetting("popupWindowWidth") );
-            popupWndHeight  = Number.parseInt( await getSetting("popupWindowHeight") );
-        }
+    // デフォルト位置・サイズの定義(Null指定するとChromeで自動決定される)
+    const defaultBounds = {
+        left:   null,
+        top:    null,
+        width:  Math.floor(tabs[0].width  * 2 / 3),
+        height: Math.floor(tabs[0].height * 2 / 3)
     }
 
-    // 数値が未定義もしくは不正な場合のデフォルトサイズ
-    if (!Number.isInteger(popupWndWidth) || popupWndWidth <= 0)   popupWndWidth  = Math.floor(tabs[0].width  * 2 / 3);
-    if (!Number.isInteger(popupWndHeight) || popupWndHeight <= 0) popupWndHeight = Math.floor(tabs[0].height * 2 / 3);
-
-
-    // ウインドウ位置
-    let popupWndPosX, popupWndPosY;
-
-    // 明示的にウインドウ位置を指定
-    if (Number.isInteger(bookmarkIndex)) {
-        // ブックマーク設定による指定
-        popupWndPosX = Number.parseInt( await getSetting(`bookmark_posX_${bookmarkIndex}`) );
-        popupWndPosY = Number.parseInt( await getSetting(`bookmark_posY_${bookmarkIndex}`) );
-    } else {
-        // アプリ設定による指定
-        const specifyWindowPos = await getSetting('specifyWindowPos');
-        if (specifyWindowPos) {
-            popupWndPosX = await getSetting('popupWindowPosX');
-            popupWndPosY = await getSetting('popupWindowPosY');
-        }
+    // ウインドウ位置とサイズ
+    let newWndBounds = defaultBounds;
+    
+    // 記憶されたウインドウ位置とサイズの復元
+    const useSavedBounds =
+        bookmarkIndex >= 0
+        ? (await getSetting(`bookmark_saveBounds_${bookmarkIndex}`)) ? bookmarkIndex : null  // ブックマークからのウインドウ
+        : (await getSetting('saveWindowBounds')) ? -1 : null; // 通常のウインドウ
+    if (useSavedBounds !== null) {
+        const prev = this.prevBoundsList.find(b => b.bookmarkIndex === useSavedBounds);
+        if (prev?.bounds) newWndBounds = prev.bounds;
     }
 
-    // 数値が未定義もしくは不正な場合はNull指定(Chromeで自動決定される)
-    if (!Number.isInteger(popupWndPosX)) popupWndPosX = null;
-    if (!Number.isInteger(popupWndPosY)) popupWndPosY = null;
+    // 明示的にウインドウ位置・サイズを指定(ブックマークの場合は除外)
+    if(bookmarkIndex < 0){
+        if (await getSetting('specifyWindowPos')) {
+            newWndBounds.left = Number( await getSetting('popupWindowPosX') );
+            newWndBounds.top  = Number( await getSetting('popupWindowPosY') );
+        }
+        if (await getSetting('specifyWindowSize')) {
+            newWndBounds.width  = Number.parseInt( await getSetting("popupWindowWidth") );
+            newWndBounds.height = Number.parseInt( await getSetting("popupWindowHeight") );
+        }
+    }
 
     // 作成
-    console.log(`open: ${_url} width: ${popupWndWidth} height: ${popupWndHeight} posx: ${popupWndPosX} posy: ${popupWndPosY}`);
-    const newWindow = await chrome.windows.create({
-        url: _url,
-        focused: true,
-        type: 'popup',
-        width: popupWndWidth,
-        height: popupWndHeight,
-        left: popupWndPosX,
-        top: popupWndPosY
-    });
+    console.log(`open:${_url} bookmarkIndex:${bookmarkIndex} bounds:`, newWndBounds);
+    let newWindow;
+    try{
+        newWindow = await chrome.windows.create({ url: _url, focused: true, type: 'popup', ...newWndBounds });
+    }catch(e){
+        // 失敗した場合、デフォルト位置・サイズで再生成する
+        console.warn(e);
+        console.warn("Failed to create the window. Retrying with default bounds");
+        newWndBounds = defaultBounds;
+        newWindow = await chrome.windows.create({ url: _url, focused: true, type: 'popup', ...newWndBounds });
+    }
 
-    // 作成したポップアップウィンドウを一覧に追加
-    TabToPopup.popupWindows.push(newWindow);
+    // 作成したポップアップウィンドウの情報を一覧に追加
+    const popupWindowInfo = {
+        windowId : newWindow.id,
+        bookmarkIndex : bookmarkIndex ?? -1
+    }
+    TabToPopup.popupWindows.push(popupWindowInfo);
 
-    // Service Worker が終了すると popupWindows の内容が失われるため、現在のウィンドウ一覧をストレージに保存
-    await setSetting("WindowObjects", JSON.stringify(TabToPopup.popupWindows) );
+    // Service Worker が終了すると popupWindows の内容が失われるため、ストレージに保存
+    await setSetting("popupWindows", TabToPopup.popupWindows );
 
     // 設定により、現在表示中のページを閉じる
     if (!linkUrl) {
         const closeOrgWindow = await getSetting('closeOrgWindow');
         if (closeOrgWindow) {
-            chrome.tabs.remove(TabToPopup.currentTab.id);
+            chrome.tabs.remove(tabs[0].id);
         }
     }
 
     // ポップアップウィンドウの監視を開始
     chrome.tabs.onUpdated.addListener(Listeners.popupWindowUpdated);
     console.log("[(+)add listener] chrome.tabs.onUpdated")
-
-    console.log("[function end] TabToPopup.createPopupWindow");
+    chrome.windows.onBoundsChanged.addListener(Listeners.popupWindowBoundsChanged);
+    console.log("[(+)add listener] chrome.windows.onBoundsChanged")
 };
 
 
@@ -255,6 +294,14 @@ TabToPopup.executeScript = async function (tabId) {
     TabToPopup.timerID = setTimeout(async function () {
         const hideScrollBar = await getSetting('hideScrollBar');
         const insertCSS     = await getSetting('insertCSS');
+
+        // タブの存在チェック
+        try {
+            const tab = await chrome.tabs.get(tabId);
+        } catch (error) {
+            console.warn(`target tab (id: ${tabId} ) is not found`);
+            return; // タブが存在しない
+        }
 
         if (hideScrollBar) {
             console.log("hideScrollBar.js execute...");

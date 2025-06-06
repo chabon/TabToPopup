@@ -4,33 +4,41 @@
 // 値のタイプは、object, boolean, string のいずれか(数値型は無し)
 export const settings = {
     // app
-    WindowObjects       : { key: "WindowObjects"      , elType: null      , defaultValue: null      },
+
+    // 現在表示しているポップアップウインドウの情報
+    // bookmarkではない場合、bookmarkIndex の値は -1
+    // { windowId:, bookmarkIndex:, bounds:{left:, top:, width:, height:} } の配列
+    popupWindows         : { key: "popupWindows"        , elType: null      , defaultValue: []        }, 
+
+    // 前回ポップアップウインドウを閉じたときの矩形情報
+    // { bookmarkIndex:, bounds:{left:, top:, width:, height:} } の配列
+    prevBoundsList       : { key: "prevBoundsList"      , elType: null      , defaultValue: []        },
+
 
     // option
-    closeOrgWindow      : { key: "closeOrgWindow"     , elType: "checkbox", defaultValue: true      },
-    hideScrollBar       : { key: "hideScrollBar"      , elType: "checkbox", defaultValue: true      },
-    addRightClickMenu   : { key: "addRightClickMenu"  , elType: "checkbox", defaultValue: false     },
+    closeOrgWindow       : { key: "closeOrgWindow"      , elType: "checkbox", defaultValue: true      },
+    hideScrollBar        : { key: "hideScrollBar"       , elType: "checkbox", defaultValue: true      },
+    addRightClickMenu    : { key: "addRightClickMenu"   , elType: "checkbox", defaultValue: false     },
 
-    insertCSS           : { key: "insertCSS"          , elType: "checkbox", defaultValue: false     },
-    cssCode             : { key: "cssCode"            , elType: "textbox",  defaultValue: ""        },
+    insertCSS            : { key: "insertCSS"           , elType: "checkbox", defaultValue: false     },
+    cssCode              : { key: "cssCode"             , elType: "textbox",  defaultValue: ""        },
 
-    specifyWindowSize   : { key: "specifyWindowSize"  , elType: "checkbox", defaultValue: false     },
-    popupWindowWidth    : { key: "popupWindowWidth"   , elType: "textbox" , defaultValue: ""        },
-    popupWindowHeight   : { key: "popupWindowHeight"  , elType: "textbox" , defaultValue: ""        },
+    saveWindowBounds     : { key: "saveWindowBounds"    , elType: "checkbox",  defaultValue: true     },
+     
+    specifyWindowSize    : { key: "specifyWindowSize"   , elType: "checkbox", defaultValue: false     },
+    popupWindowWidth     : { key: "popupWindowWidth"    , elType: "textbox" , defaultValue: ""        },
+    popupWindowHeight    : { key: "popupWindowHeight"   , elType: "textbox" , defaultValue: ""        },
 
-    specifyWindowPos    : { key: "specifyWindowPos"   , elType: "checkbox", defaultValue: false     },
-    popupWindowPosX     : { key: "popupWindowPosX"    , elType: "textbox" , defaultValue: ""        },
-    popupWindowPosY     : { key: "popupWindowPosY"    , elType: "textbox" , defaultValue: ""        }
+    specifyWindowPos     : { key: "specifyWindowPos"    , elType: "checkbox", defaultValue: false     },
+    popupWindowPosX      : { key: "popupWindowPosX"     , elType: "textbox" , defaultValue: ""        },
+    popupWindowPosY      : { key: "popupWindowPosY"     , elType: "textbox" , defaultValue: ""        }
 };
 
 //  ブックマーク設定(上限20個)
 for (let i = 0; i < 20; i++) {
-  settings[`bookmark_name_${i}`]    = { key: `bookmark_name_${i}`   , elType: "textbox", defaultValue: "" };
-  settings[`bookmark_url_${i}`]     = { key: `bookmark_url_${i}`    , elType: "textbox", defaultValue: "" };
-  settings[`bookmark_width_${i}`]   = { key: `bookmark_width_${i}`  , elType: "textbox", defaultValue: "" };
-  settings[`bookmark_height_${i}`]  = { key: `bookmark_height_${i}` , elType: "textbox", defaultValue: "" };
-  settings[`bookmark_posX_${i}`]    = { key: `bookmark_posX_${i}`   , elType: "textbox", defaultValue: "" };
-  settings[`bookmark_posY_${i}`]    = { key: `bookmark_posY_${i}`   , elType: "textbox", defaultValue: "" };
+  settings[`bookmark_name_${i}`]        = { key: `bookmark_name_${i}`       , elType: "textbox" , defaultValue: ""   };
+  settings[`bookmark_url_${i}`]         = { key: `bookmark_url_${i}`        , elType: "textbox" , defaultValue: ""   };
+  settings[`bookmark_saveBounds_${i}`]  = { key: `bookmark_saveBounds_${i}` , elType: "checkbox", defaultValue: true };
 }
 
 // 1個取得する

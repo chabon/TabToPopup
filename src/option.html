@@ -48,6 +48,16 @@
 
 <hr>
 
+<!-- Window position and size -->
+<h4>Window position and size</h4>
+
+<!-- saveWindowBounds -->
+<ul>
+    <input type="checkbox" id="saveWindowBounds" value="" unchecked>
+    remember previous popup window position and size
+</ul>
+
+
 
 <!-- specify window size -->
 <ul>
@@ -55,6 +65,7 @@
     specify popup window size
 </ul>
 <ul>
+    　
     Width=
     <input type="number" id="popupWindowWidth" size="10" min="0" max ="9999" placeholder="640">
     　
@@ -62,7 +73,6 @@
     <input type="number" id="popupWindowHeight" size="10" min="0" max="9999" placeholder="480">
 </ul>
 
-<hr>
 
 
 <!-- specify window pos -->
@@ -71,6 +81,7 @@
     specify popup window position
 </ul>
 <ul>
+    　
     Pos X=
     <input type="number" id="popupWindowPosX" size="10" min="-100000" max ="100000" placeholder="0">
     　
@@ -84,44 +95,37 @@
 <!-- bookmarks -->
 <h4>Bookmarks</h4>
 <p>The following sites will be added to right-click menu on the TabToPopup icon</p>
-<p>"Width", "Height", "Pos X" and "Pos Y" are optional and override above options</p>
 
 <table border="0">
     <tr>
         <td>Name</td> 
         <td>URL</td>
-        <td>Width</td>
-        <td>Height</td>
-        <td>Pos X</td>
-        <td>Pos Y</td>
+        <td>Remember window<br/>position and size</td>
     </tr>
     <tr>
-      <td> <input id="bookmark_name_0"             type="text" value="" placeholder="Google"> </td>
-      <td> <input id="bookmark_url_0"    size="40" type="text" value="" placeholder="https://www.google.com/"> </td>
-      <td> <input id="bookmark_width_0"  size="5"  type="text" value="" placeholder="640"> </td>
-      <td> <input id="bookmark_height_0" size="5"  type="text" value="" placeholder="480"> </td>
-      <td> <input id="bookmark_posX_0"   size="5"  type="text" value="" placeholder="0"> </td>
-      <td> <input id="bookmark_posY_0"   size="5"  type="text" value="" placeholder="0"> </td>
+      <td> <input id="bookmark_name_0" type="text" value="" placeholder="Google"> </td>
+      <td> <input id="bookmark_url_0" size="40" type="text" value="" placeholder="https://www.google.com/"> </td>
+      <td align="center"> <input id="bookmark_saveBounds_0" type="checkbox" checked></td>
     </tr>
-    <tr> <td> <input id="bookmark_name_1"  type="text" value=""> </td> <td> <input id="bookmark_url_1"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_1"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_1"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_1"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_1"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_2"  type="text" value=""> </td> <td> <input id="bookmark_url_2"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_2"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_2"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_2"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_2"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_3"  type="text" value=""> </td> <td> <input id="bookmark_url_3"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_3"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_3"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_3"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_3"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_4"  type="text" value=""> </td> <td> <input id="bookmark_url_4"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_4"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_4"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_4"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_4"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_5"  type="text" value=""> </td> <td> <input id="bookmark_url_5"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_5"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_5"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_5"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_5"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_6"  type="text" value=""> </td> <td> <input id="bookmark_url_6"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_6"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_6"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_6"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_6"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_7"  type="text" value=""> </td> <td> <input id="bookmark_url_7"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_7"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_7"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_7"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_7"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_8"  type="text" value=""> </td> <td> <input id="bookmark_url_8"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_8"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_8"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_8"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_8"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_9"  type="text" value=""> </td> <td> <input id="bookmark_url_9"  size="40" type="text" value=""> </td> <td> <input id="bookmark_width_9"  size="5" type="text" value=""> </td> <td> <input id="bookmark_height_9"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_9"  size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_9"  size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_10" type="text" value=""> </td> <td> <input id="bookmark_url_10" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_10" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_10" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_10" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_10" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_11" type="text" value=""> </td> <td> <input id="bookmark_url_11" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_11" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_11" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_11" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_11" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_12" type="text" value=""> </td> <td> <input id="bookmark_url_12" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_12" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_12" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_12" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_12" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_13" type="text" value=""> </td> <td> <input id="bookmark_url_13" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_13" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_13" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_13" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_13" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_14" type="text" value=""> </td> <td> <input id="bookmark_url_14" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_14" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_14" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_14" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_14" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_15" type="text" value=""> </td> <td> <input id="bookmark_url_15" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_15" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_15" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_15" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_15" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_16" type="text" value=""> </td> <td> <input id="bookmark_url_16" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_16" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_16" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_16" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_16" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_17" type="text" value=""> </td> <td> <input id="bookmark_url_17" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_17" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_17" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_17" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_17" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_18" type="text" value=""> </td> <td> <input id="bookmark_url_18" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_18" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_18" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_18" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_18" size="5" type="text" value=""> </td> </tr>
-    <tr> <td> <input id="bookmark_name_19" type="text" value=""> </td> <td> <input id="bookmark_url_19" size="40" type="text" value=""> </td> <td> <input id="bookmark_width_19" size="5" type="text" value=""> </td> <td> <input id="bookmark_height_19" size="5" type="text" value=""> </td> <td> <input id="bookmark_posX_19" size="5" type="text" value=""> </td> <td> <input id="bookmark_posY_19" size="5" type="text" value=""> </td> </tr>
+    <tr> <td> <input id="bookmark_name_1"  type="text" value=""> </td> <td> <input id="bookmark_url_1"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_1"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_2"  type="text" value=""> </td> <td> <input id="bookmark_url_2"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_2"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_3"  type="text" value=""> </td> <td> <input id="bookmark_url_3"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_3"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_4"  type="text" value=""> </td> <td> <input id="bookmark_url_4"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_4"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_5"  type="text" value=""> </td> <td> <input id="bookmark_url_5"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_5"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_6"  type="text" value=""> </td> <td> <input id="bookmark_url_6"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_6"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_7"  type="text" value=""> </td> <td> <input id="bookmark_url_7"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_7"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_8"  type="text" value=""> </td> <td> <input id="bookmark_url_8"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_8"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_9"  type="text" value=""> </td> <td> <input id="bookmark_url_9"  size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_9"  type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_10" type="text" value=""> </td> <td> <input id="bookmark_url_10" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_10" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_11" type="text" value=""> </td> <td> <input id="bookmark_url_11" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_11" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_12" type="text" value=""> </td> <td> <input id="bookmark_url_12" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_12" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_13" type="text" value=""> </td> <td> <input id="bookmark_url_13" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_13" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_14" type="text" value=""> </td> <td> <input id="bookmark_url_14" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_14" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_15" type="text" value=""> </td> <td> <input id="bookmark_url_15" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_15" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_16" type="text" value=""> </td> <td> <input id="bookmark_url_16" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_16" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_17" type="text" value=""> </td> <td> <input id="bookmark_url_17" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_17" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_18" type="text" value=""> </td> <td> <input id="bookmark_url_18" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_18" type="checkbox" checked></td></tr> 
+    <tr> <td> <input id="bookmark_name_19" type="text" value=""> </td> <td> <input id="bookmark_url_19" size="40" type="text" value=""> </td> <td align="center">  <input id="bookmark_saveBounds_19" type="checkbox" checked></td></tr> 
 </table>
 
 
