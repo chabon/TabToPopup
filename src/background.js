@@ -289,9 +289,8 @@ TabToPopup.createPopupWindow = async function (linkUrl, bookmarkIndex) {
 
 
 TabToPopup.executeScript = async function (tabId) {
-    // 繰り返し呼び出された場合は1sec以上の間隔を要求するようにする(タイマーを利用)
-    clearTimeout(TabToPopup.timerID); 
-    TabToPopup.timerID = setTimeout(async function () {
+    // 繰り返し呼び出された場合は1sec以上の間隔を要求するようにする(タイマーを利用したデバウンス処理)
+    TabToPopup.asyncKeyedDebounce(tabId, 1000, async () => {
         const hideScrollBar = await getSetting('hideScrollBar');
         const insertCSS     = await getSetting('insertCSS');
 
@@ -319,8 +318,27 @@ TabToPopup.executeScript = async function (tabId) {
                 css: cssCode || ""
             });
         }
-    }, 1000);
+    });
 };
+
+
+// デバウンス関数を複数のキーで動的に管理できるクロージャ(即時実行関数によって即クロージャを生成し、timerIds を保持)
+TabToPopup.asyncKeyedDebounce = (() => {
+    const timerIds = new Map();
+
+    return (key, wait, asyncFunc, ...args) => {
+        if (timerIds.has(key)) {
+            clearTimeout(timerIds.get(key));
+        }
+
+        const id = setTimeout(async () => {
+            await asyncFunc(...args);
+            timerIds.delete(key);
+        }, wait);
+
+        timerIds.set(key, id);
+    };
+})();
 
 
 // .addListener()は Service Worker 起動直後に完了させる(.addListener() の前に await すると、イベント発火に間に合わない)
